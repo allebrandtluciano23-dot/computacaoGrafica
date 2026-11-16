@@ -1,0 +1,23 @@
+# Arquivos internos do Visual Studio (cache, banco de dados do IntelliSense)
+.vs/
+
+# Arquivos intermediarios de compilacao
+bin-int/
+
+# Arquivos gerados pela compilacao (sao recriados ao compilar)
+*.exe
+*.pdb
+*.ilk
+*.obj
+*.idb
+*.tlog
+*.log
+
+# Configuracoes pessoais / geradas em tempo de execucao
+*.user
+imgui.ini
+OpenGL_Info.txt
+
+# Backups automaticos do 3ds Max
+*.max.bak
+*_autobak*
