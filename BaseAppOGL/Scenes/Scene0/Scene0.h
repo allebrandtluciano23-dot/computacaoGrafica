@@ -7,7 +7,7 @@
 #include "Engine/CTimer.h"
 #include "Engine/CText.h"
 #include "Engine/CPrimitives.h"
-#include "Engine/cTerrain.h"
+#include "Engine/cTerrain.h" // heightmap
 
 
 
@@ -46,6 +46,14 @@ private:
 
 	// Background color 
 	glm::vec4 backgroundColor;
+
+	// ilumionacao
+	glm::vec3 ambientColor;
+	glm::vec3 lightPos;
+	glm::vec3 lightColor;
+
+	//neblina
+	float fogDensity;
 
 	//Chao plano
 	//CPrimitives* pFloor;

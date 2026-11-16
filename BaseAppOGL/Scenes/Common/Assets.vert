@@ -7,6 +7,8 @@ layout (location = 4) in vec3 bitangent;
 
 out vec2 TexCoord;
 out vec3 Normal;
+out vec3 FragPos; //nova posicao 
+
 
 uniform mat4 model;
 uniform mat4 view;
@@ -15,9 +17,10 @@ uniform float uTiling = 1.0;
 
 void main()
 {
-    TexCoord = vec2(texCoord.x, texCoord.y) * uTiling;
+    TexCoord = texCoord* uTiling;
 
     Normal = mat3(transpose(inverse(model))) * normal;
+    FragPos = vec3(model * vec4(position, 1.0f)); //nova posicao
 
     gl_Position = projection * view * model * vec4(position, 1.0f);
 }

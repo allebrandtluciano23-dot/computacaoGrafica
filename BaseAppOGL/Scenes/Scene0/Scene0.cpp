@@ -21,8 +21,17 @@ Scene0::Scene0()
 	// Mostra a GUI
 	bShowGUI = false;
 
-	// Background color
-	backgroundColor = glm::vec4(0.1f, 0.1f, 0.15f, 1.0f);
+	// Background color (noite)
+	backgroundColor = glm::vec4(0.16f, 0.19f, 0.26f, 1.0f);
+	
+	// iluminacao
+	ambientColor = glm::vec3(0.25f, 0.30f, 0.45f);
+	lightPos = glm::vec3(0.0f, 3.0f, 0.0f);
+	lightColor = glm::vec3(1.0f, 0.6f, 0.3f) * 4.0f;
+
+	//neblina
+	fogDensity = 0.01f;
+
 
 	// Cria os shaders
 	pShader = NULL;
@@ -140,12 +149,24 @@ void Scene0::DrawScene(float deltaTime)
 	//pTextures->ApplyTexture(0);
 	//pFloor->render();
 
+
+	//chao irregular
 	pShader->Use("Assets"); 
 	pShader->SetMat4("projection", projection);
 	pShader->SetMat4("view", view);
 	pShader->SetMat4("model", glm::mat4(1.0f));
 	pShader->SetInt("Texture0", 0);
 	pShader->SetFloat("uTiling", 30.0f); // pro chao nao ficar esticado e feio
+	
+	// iluminacao e neblina 
+	pShader->SetVec3("uViewPos", pCamera->Position);
+	pShader->SetVec3("uAmbient", ambientColor);
+	pShader->SetVec3("uLightPos", lightPos);
+	pShader->SetVec3("uLightColor", lightColor);
+	pShader->SetVec3("uFogColor", glm::vec3(backgroundColor));
+	pShader->SetFloat("uFogDensity", fogDensity);
+
+
 	glActiveTexture(GL_TEXTURE0);
 	pTextures->ApplyTexture(0);
 	pTerrain->DrawTerrain();
