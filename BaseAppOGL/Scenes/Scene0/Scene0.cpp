@@ -54,7 +54,7 @@ Scene0::Scene0()
 	//Textura do chao
 	pTextures = new CTextures();
 	pTextures->LoadTextureAnisotropic(0,"Scenes/Textures/chaoFolhas.png");
-
+	pTextures->LoadTextureAnisotropic(1, "Scenes/Textures/chaoFolhasNormal.png");
 
 	//Cria o chao plano
 	//pFloor = NULL;
@@ -157,6 +157,10 @@ void Scene0::DrawScene(float deltaTime)
 	pShader->SetMat4("model", glm::mat4(1.0f));
 	pShader->SetInt("Texture0", 0);
 	pShader->SetFloat("uTiling", 30.0f); // pro chao nao ficar esticado e feio
+	//normal mapping
+	pShader->SetInt("NormalMap", 1);
+	pShader->SetBool("uUseNormalMap", true);
+	pShader->SetFloat("uNormalStrength", 1.0f);
 	
 	// iluminacao e neblina 
 	pShader->SetVec3("uViewPos", pCamera->Position);
@@ -166,9 +170,12 @@ void Scene0::DrawScene(float deltaTime)
 	pShader->SetVec3("uFogColor", glm::vec3(backgroundColor));
 	pShader->SetFloat("uFogDensity", fogDensity);
 
-
+	glActiveTexture(GL_TEXTURE1);      // unidade 1 -> normal map
+	pTextures->ApplyTexture(1);
+	
 	glActiveTexture(GL_TEXTURE0);
 	pTextures->ApplyTexture(0);
+	
 	pTerrain->DrawTerrain();
 
 

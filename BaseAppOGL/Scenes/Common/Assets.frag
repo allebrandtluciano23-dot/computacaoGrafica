@@ -3,9 +3,13 @@
 in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos; //nova posicao
+in mat3 TBN; //nova posicao do mapping
 out vec4 FragColor;
 
 uniform sampler2D Texture0;
+uniform sampler2D NormalMap;         // NOVO: normal map
+uniform bool  uUseNormalMap = false; // NOVO: liga/desliga
+uniform float uNormalStrength = 1.0; // NOVO: força do relevo
 
 
 /// iluminacao
@@ -27,8 +31,21 @@ void main()
     if(texColor.a < 0.1) // Adjust threshold as needed
         discard;
 
+
+    vec3 N;
+    if (uUseNormalMap)
+    {
+        vec3 n = texture(NormalMap, TexCoord).rgb;  // cor de 0..1
+        n = n * 2.0 - 1.0;                          // direção de -1..1
+        n.xy *= uNormalStrength;                    // exagera ou suaviza o relevo
+        N = normalize(TBN * n);                     // gira para o mundo
+    }
+    else
+    {
+        N = normalize(Normal);
+    }
+
     //                                               Bling phong
-    vec3 N = normalize(Normal);
     vec3 toLight = uLightPos - FragPos;
     float dist = length(toLight);
     vec3 L = toLight / dist;
