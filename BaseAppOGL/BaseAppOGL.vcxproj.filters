@@ -173,6 +173,12 @@
     <None Include="Scenes\Common\Normals.vert">
       <Filter>Scenes\Common</Filter>
     </None>
+    <None Include="Skyboox.vert">
+      <Filter>Scenes\Common</Filter>
+    </None>
+    <None Include="Skyboox.frag">
+      <Filter>Scenes\Common</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">

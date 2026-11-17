@@ -22,7 +22,7 @@ Scene0::Scene0()
 	bShowGUI = false;
 
 	// Background color (noite)
-	backgroundColor = glm::vec4(0.16f, 0.19f, 0.26f, 1.0f);
+	backgroundColor = glm::vec4(0.03f, 0.04f, 0.055f, 1.0f);
 	
 	// iluminacao
 	ambientColor = glm::vec3(0.25f, 0.30f, 0.45f);
@@ -30,7 +30,7 @@ Scene0::Scene0()
 	lightColor = glm::vec3(1.0f, 0.6f, 0.3f) * 4.0f;
 
 	//neblina
-	fogDensity = 0.01f;
+	fogDensity = 0.013;
 
 
 	// Cria os shaders
@@ -42,6 +42,8 @@ Scene0::Scene0()
 
 	//shader chao
 	pShader->LoadShader("Assets", "Scenes/Common/Assets.vert", "Scenes/Common/Assets.frag");
+	//shader skybox
+	pShader->LoadShader("Skybox", "Scenes/Common/Skybox.vert", "Scenes/Common/Skybox.frag");
 
 
 	// Cria o gerenciador de grid e axis
@@ -65,7 +67,19 @@ Scene0::Scene0()
 	//Cria o terreno irregular
 	pTerrain = NULL;
 	pTerrain = new CTerrain("Scenes/Textures/heightmap.png");
-	
+
+	// Cria o skybox
+	std::vector<std::string> faces
+	{
+		"Scenes/SkyboxNoite/right.jpg",
+		"Scenes/SkyboxNoite/left.jpg",
+		"Scenes/SkyboxNoite/top.jpg",
+		"Scenes/SkyboxNoite/bottom.jpg",
+		"Scenes/SkyboxNoite/front.jpg",
+		"Scenes/SkyboxNoite/back.jpg"
+	};
+	pSkybox = NULL;
+	pSkybox = new CSkybox(faces);
 
 }
 
@@ -118,6 +132,12 @@ Scene0::~Scene0()
 	{
 		delete pTerrain;
 		pTerrain = NULL;
+	}
+
+	if (pSkybox) // deleta do buffer skybox
+	{
+		delete pSkybox;
+		pSkybox = NULL;
 	}
 }
 
@@ -178,8 +198,16 @@ void Scene0::DrawScene(float deltaTime)
 	
 	pTerrain->DrawTerrain();
 
+	/// skybox 
 
-
+	pShader->Use("Skybox"); 
+	pShader->SetMat4("projection", projection);
+	pShader->SetMat4("view", view);
+	pShader->SetInt("skybox", 0);
+	pShader->SetVec3("uFogColor", glm::vec3(backgroundColor));
+	pShader->SetFloat("uHorizonFog", 0.15f);
+	
+	pSkybox->DrawSkybox();
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Draw the 3D grid
@@ -192,10 +220,10 @@ void Scene0::DrawScene(float deltaTime)
 	//pShader->SetVec3("uCamPos", pCamera->Position);
 	//pGridAxis->DrawGrid();
 	// Draw the 3D axis
-	pShader->Use("Axis");
-	pShader->SetMat4("uProj", projection);
-	pShader->SetMat4("uView", view);
-	pGridAxis->DrawAxis();
+	//pShader->Use("Axis");
+	//pShader->SetMat4("uProj", projection);
+	//pShader->SetMat4("uView", view);
+	//pGridAxis->DrawAxis();
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//                               DESENHA OS OBJETOS DA CENA (INÍCIO)

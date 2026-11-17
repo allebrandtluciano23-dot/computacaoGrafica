@@ -7,7 +7,8 @@
 #include "Engine/CTimer.h"
 #include "Engine/CText.h"
 #include "Engine/CPrimitives.h"
-#include "Engine/cTerrain.h" // heightmap
+#include "Engine/CTerrain.h" // heightmap
+#include "Engine/CSkybox.h" // skybox	
 
 
 
@@ -60,6 +61,9 @@ private:
 
 	//molda terreno
 	CTerrain* pTerrain;
+
+	//Skybox
+	CSkybox* pSkybox;
 
 };
 
