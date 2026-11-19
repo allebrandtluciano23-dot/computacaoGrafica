@@ -55,8 +55,13 @@ Scene0::Scene0()
 	
 	//Textura do chao
 	pTextures = new CTextures();
+	//folhas
 	pTextures->LoadTextureAnisotropic(0,"Scenes/Textures/chaoFolhas.png");
 	pTextures->LoadTextureAnisotropic(1, "Scenes/Textures/chaoFolhasNormal.png");
+	//cascalho
+	pTextures->LoadTextureAnisotropic(2, "Scenes/Textures/chaoPedras.png");
+	pTextures->LoadTextureAnisotropic(3, "Scenes/Textures/trilhaMask.png");
+	pTextures->LoadTextureAnisotropic(4, "Scenes/Textures/chaoPedrasNormal.png");
 
 	//Cria o chao plano
 	//pFloor = NULL;
@@ -179,9 +184,15 @@ void Scene0::DrawScene(float deltaTime)
 	pShader->SetFloat("uTiling", 30.0f); // pro chao nao ficar esticado e feio
 	//normal mapping
 	pShader->SetInt("NormalMap", 1);
+	pShader->SetInt("NormalMap1", 4);
 	pShader->SetBool("uUseNormalMap", true);
 	pShader->SetFloat("uNormalStrength", 1.0f);
 	
+	//multi texture
+	pShader->SetInt("Texture1", 2);
+	pShader->SetInt("MaskMap", 3);
+	pShader->SetBool("uUseMultiTex", true);
+
 	// iluminacao e neblina 
 	pShader->SetVec3("uViewPos", pCamera->Position);
 	pShader->SetVec3("uAmbient", ambientColor);
@@ -190,10 +201,19 @@ void Scene0::DrawScene(float deltaTime)
 	pShader->SetVec3("uFogColor", glm::vec3(backgroundColor));
 	pShader->SetFloat("uFogDensity", fogDensity);
 
+	glActiveTexture(GL_TEXTURE4);      // unidade 4 -> normal map cascalho
+	pTextures->ApplyTexture(4);
+
+	glActiveTexture(GL_TEXTURE3);      // unidade 3 -> mask map trilha
+	pTextures->ApplyTexture(3);
+
+	glActiveTexture(GL_TEXTURE2);      // unidade 2 ->cascalho
+	pTextures->ApplyTexture(2);
+
 	glActiveTexture(GL_TEXTURE1);      // unidade 1 -> normal map
 	pTextures->ApplyTexture(1);
 	
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0);     // FOLHAS E TALZ
 	pTextures->ApplyTexture(0);
 	
 	pTerrain->DrawTerrain();

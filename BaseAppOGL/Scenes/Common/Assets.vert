@@ -9,7 +9,7 @@ out vec2 TexCoord;
 out vec3 Normal;
 out vec3 FragPos; //nova posicao 
 out mat3 TBN; //nova posicao do mapping 
-
+out vec2 BaseUV; // sem repeticao pra mascara calcario 
 
 uniform mat4 model;
 uniform mat4 view;
@@ -19,6 +19,7 @@ uniform float uTiling = 1.0;
 void main()
 {
     TexCoord = texCoord* uTiling;
+    BaseUV = texCoord;
     FragPos = vec3(model * vec4(position, 1.0f)); //nova posicao
    
     mat3 normalMatrix = mat3(transpose(inverse(model)));

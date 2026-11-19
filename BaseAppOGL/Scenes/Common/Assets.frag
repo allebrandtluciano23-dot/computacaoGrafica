@@ -4,12 +4,21 @@ in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos; //nova posicao
 in mat3 TBN; //nova posicao do mapping
+in vec2 BaseUV; // sem repeticao pra mascara calcario 
 out vec4 FragColor;
 
 uniform sampler2D Texture0;
-uniform sampler2D NormalMap;         // NOVO: normal map
-uniform bool  uUseNormalMap = false; // NOVO: liga/desliga
-uniform float uNormalStrength = 1.0; // NOVO: força do relevo
+uniform sampler2D NormalMap;         // folhas normal map
+uniform sampler2D NormalMap1;       // cascalho normal map
+uniform bool  uUseNormalMap = false; 
+uniform float uNormalStrength = 1.0; // força do relevo
+
+uniform sampler2D Texture1; // cascaljho
+uniform sampler2D MaskMap; // nova mascara
+uniform bool  uUseMultiTex = false; 
+uniform float uGravelScale = 3.0; 
+uniform float uGravelBrightness = 0.7;   //escurece o cascalho para combinar com as folhas
+
 
 
 /// iluminacao
@@ -25,7 +34,18 @@ uniform float uFogDensity;
 
 void main()
 {
-    vec4 texColor = texture(Texture0, TexCoord);
+   vec4 texColor = texture(Texture0, TexCoord);   // folhas
+
+    // ---------- Multi-textura ----------
+    float mask = 0.0;
+    if (uUseMultiTex)
+    {
+        vec4 tex2 = texture(Texture1, TexCoord * uGravelScale);   // cascalho (repetido)
+        tex2.rgb *= uGravelBrightness;
+         tex2.rgb *= vec3(1.0, 0.9, 0.75); //cor cacalhos
+        mask = texture(MaskMap, BaseUV).r;         // máscara (sem repetir)
+        texColor = mix(texColor, tex2, mask);      // 0 = folhas, 1 = cascalho
+    }
 
     texColor.rgb *= texColor.a;
     if(texColor.a < 0.1) // Adjust threshold as needed
@@ -35,9 +55,10 @@ void main()
     vec3 N;
     if (uUseNormalMap)
     {
-        vec3 n = texture(NormalMap, TexCoord).rgb;  // cor de 0..1
-        n = n * 2.0 - 1.0;                          // direção de -1..1
-        n.xy *= uNormalStrength;                    // exagera ou suaviza o relevo
+        vec3 nFolhas = texture(NormalMap,  TexCoord).rgb * 2.0 - 1.0;  // relevo das folhas
+        vec3 nPedras = texture(NormalMap1, TexCoord * uGravelScale).rgb * 2.0 - 1.0;  // relevo do cascalho
+        vec3 n = normalize(mix(nFolhas, nPedras, mask));        
+        n.xy *= uNormalStrength;     
         N = normalize(TBN * n);                     // gira para o mundo
     }
     else
