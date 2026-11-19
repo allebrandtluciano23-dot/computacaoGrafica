@@ -173,10 +173,16 @@
     <None Include="Scenes\Common\Normals.vert">
       <Filter>Scenes\Common</Filter>
     </None>
-    <None Include="Skyboox.vert">
+    <None Include="Scenes\Common\Water.frag">
       <Filter>Scenes\Common</Filter>
     </None>
-    <None Include="Skyboox.frag">
+    <None Include="Scenes\Common\Water.vert">
+      <Filter>Scenes\Common</Filter>
+    </None>
+    <None Include="Scenes\Common\Skybox.vert">
+      <Filter>Scenes\Common</Filter>
+    </None>
+    <None Include="Scenes\Common\Skybox.frag">
       <Filter>Scenes\Common</Filter>
     </None>
   </ItemGroup>

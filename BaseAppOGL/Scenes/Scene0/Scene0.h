@@ -65,5 +65,9 @@ private:
 	//Skybox
 	CSkybox* pSkybox;
 
+	// Lago
+	CPrimitives* pWater;
+	glm::vec3 waterPos;
+
 };
 

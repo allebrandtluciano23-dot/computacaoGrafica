@@ -44,6 +44,8 @@ Scene0::Scene0()
 	pShader->LoadShader("Assets", "Scenes/Common/Assets.vert", "Scenes/Common/Assets.frag");
 	//shader skybox
 	pShader->LoadShader("Skybox", "Scenes/Common/Skybox.vert", "Scenes/Common/Skybox.frag");
+	// shader agua
+	pShader->LoadShader("Water", "Scenes/Common/Water.vert", "Scenes/Common/Water.frag");
 
 
 	// Cria o gerenciador de grid e axis
@@ -62,6 +64,8 @@ Scene0::Scene0()
 	pTextures->LoadTextureAnisotropic(2, "Scenes/Textures/chaoPedras.png");
 	pTextures->LoadTextureAnisotropic(3, "Scenes/Textures/trilhaMask.png");
 	pTextures->LoadTextureAnisotropic(4, "Scenes/Textures/chaoPedrasNormal.png");
+	//agua 
+	pTextures->LoadTextureLinear(5, "Scenes/Textures/heightmap.png");
 
 	//Cria o chao plano
 	//pFloor = NULL;
@@ -86,6 +90,11 @@ Scene0::Scene0()
 	pSkybox = NULL;
 	pSkybox = new CSkybox(faces);
 
+	waterPos = glm::vec3(-13.0f, -0.1f, 9.0f);
+	pWater = NULL;
+	pWater = new CPrimitives();
+	pWater->generatePlane(18.0f, 18.0f, 1, 1);
+	pWater->setupBuffers();
 }
 
 Scene0::~Scene0()
@@ -144,6 +153,13 @@ Scene0::~Scene0()
 		delete pSkybox;
 		pSkybox = NULL;
 	}
+
+		if (pWater)
+	{
+		delete pWater;
+		pWater = NULL;
+	}
+
 }
 
 void Scene0::DrawScene(float deltaTime)
@@ -200,6 +216,7 @@ void Scene0::DrawScene(float deltaTime)
 	pShader->SetVec3("uLightColor", lightColor);
 	pShader->SetVec3("uFogColor", glm::vec3(backgroundColor));
 	pShader->SetFloat("uFogDensity", fogDensity);
+	pShader->SetFloat("uWaterLevel", waterPos.y);
 
 	glActiveTexture(GL_TEXTURE4);      // unidade 4 -> normal map cascalho
 	pTextures->ApplyTexture(4);
@@ -218,17 +235,46 @@ void Scene0::DrawScene(float deltaTime)
 	
 	pTerrain->DrawTerrain();
 
-	/// skybox 
-
-	pShader->Use("Skybox"); 
+	// ================= SKYBOX =================
+	pShader->Use("Skybox");
 	pShader->SetMat4("projection", projection);
 	pShader->SetMat4("view", view);
 	pShader->SetInt("skybox", 0);
 	pShader->SetVec3("uFogColor", glm::vec3(backgroundColor));
 	pShader->SetFloat("uHorizonFog", 0.15f);
-	
 	pSkybox->DrawSkybox();
 
+
+	// ================= LAGO (transparente) =================
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);
+	glDisable(GL_CULL_FACE);
+
+	pShader->Use("Water");
+	pShader->SetMat4("projection", projection);
+	pShader->SetMat4("view", view);
+	pShader->SetMat4("model", glm::translate(glm::mat4(1.0f), waterPos));
+	pShader->SetVec3("uViewPos", pCamera->Position);
+	pShader->SetVec3("uLightPos", lightPos);
+	pShader->SetVec3("uLightColor", lightColor);
+	pShader->SetVec3("uFogColor", glm::vec3(backgroundColor));
+	pShader->SetFloat("uFogDensity", fogDensity);
+	pShader->SetFloat("uTime", (float)(pTimer->GetTime() / 1000.0));
+	pShader->SetInt("skybox", 0);        // cubemap na unidade 0
+	pShader->SetInt("uHeightMap", 1);    // heightmap na unidade 1
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, pSkybox->GetSkyboxTexture());   // céu = espelho
+	glActiveTexture(GL_TEXTURE1);
+	pTextures->ApplyTexture(5);                                         // heightmap
+	glActiveTexture(GL_TEXTURE0);
+
+	pWater->render();
+
+	glEnable(GL_CULL_FACE);
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Draw the 3D grid
 	//pShader->Use("Grid");

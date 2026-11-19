@@ -1,11 +1,4 @@
 #version 330 core
-// ─────────────────────────────────────────────────────────────────────────────
-//  grid.frag  —  Infinite XZ world-plane grid (analytical anti-aliasing)
-//
-//  Reference: Evan Wallace "Antialiased Grid Shader"
-//  The mesh is a large flat quad in the XZ plane (Y=0).
-//  fwidth() gives us screen-space derivatives for AA grid lines.
-// ─────────────────────────────────────────────────────────────────────────────
 
 in  vec3 vWorldPos;
 out vec4 FragColor;

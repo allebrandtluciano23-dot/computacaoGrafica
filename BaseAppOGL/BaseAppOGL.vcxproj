@@ -69,10 +69,12 @@
     <None Include="Scenes\Common\grid.vert" />
     <None Include="Scenes\Common\Normals.frag" />
     <None Include="Scenes\Common\Normals.vert" />
+    <None Include="Scenes\Common\Skybox.frag" />
+    <None Include="Scenes\Common\Skybox.vert" />
     <None Include="Scenes\Common\Text2D.frag" />
     <None Include="Scenes\Common\Text2D.vert" />
-    <None Include="Skyboox.frag" />
-    <None Include="Skyboox.vert" />
+    <None Include="Scenes\Common\Water.frag" />
+    <None Include="Scenes\Common\Water.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

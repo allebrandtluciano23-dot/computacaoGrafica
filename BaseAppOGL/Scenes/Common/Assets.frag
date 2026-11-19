@@ -18,7 +18,9 @@ uniform sampler2D MaskMap; // nova mascara
 uniform bool  uUseMultiTex = false; 
 uniform float uGravelScale = 3.0; 
 uniform float uGravelBrightness = 0.7;   //escurece o cascalho para combinar com as folhas
-
+uniform float uWaterLevel = -1000.0; // nivel da agua (para nao pintar o fundo do lago)
+uniform vec2  uLakeCenter = vec2(-13.0, 9.0);   // centro do lago (x, z)
+uniform float uLakeRadius = 11.0;               // até onde vai o efeito de fundo de lago
 
 
 /// iluminacao
@@ -45,6 +47,14 @@ void main()
          tex2.rgb *= vec3(1.0, 0.9, 0.75); //cor cacalhos
         mask = texture(MaskMap, BaseUV).r;         // máscara (sem repetir)
         texColor = mix(texColor, tex2, mask);      // 0 = folhas, 1 = cascalho
+         
+        //coisa agua
+        float nearLake = 1.0 - smoothstep(uLakeRadius - 2.0, uLakeRadius, distance(FragPos.xz, uLakeCenter));
+        float underwater = smoothstep(uWaterLevel + 0.3, uWaterLevel - 0.2, FragPos.y) * nearLake;
+        texColor = mix(texColor, tex2, underwater);
+        mask = max(mask, underwater);
+        float depthDark = smoothstep(uWaterLevel, uWaterLevel - 1.0, FragPos.y);
+        texColor.rgb *= mix(0.75, 0.35, depthDark) * underwater + (1.0 - underwater);
     }
 
     texColor.rgb *= texColor.a;
